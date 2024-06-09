@@ -5,12 +5,22 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title></title>
-        <link href="css/style.css" rel="stylesheet">
+        <title>FM-HTMX</title>
+        <script src="https://unpkg.com/htmx.org@1.9.12"
+            integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+            crossorigin="anonymous">
+        </script>
     </head>
     <body>
-        Count {{ .Count }}
+        <div id="count">
+            {{ template "count" . }}
+        </div>
+        <button hx-post="/count" hx-target="#count">Count</button>
     </body>
 </html>
 
+{{ end }}
+
+{{ block "count" . }}
+    Count {{ .Count }}
 {{ end }}
