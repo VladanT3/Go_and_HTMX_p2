@@ -6,6 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>FM-HTMX</title>
+        <link rel="stylesheet" href="css/index.css">
         <script src="https://unpkg.com/htmx.org@1.9.12"
             integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
             crossorigin="anonymous">
@@ -31,29 +32,46 @@
 {{ end }}
 
 {{ block "form" . }}
-    <form hx-post="/contacts" hx-swap="outerHTML">
-        name: <input type="text" name="name" {{ if .Values.name }} value="{{ .Values.name }}" {{ end }}>
-        email: <input type="email" name="email" {{ if .Values.email }} value="{{ .Values.email }}" {{ end }}>
+<form hx-post="/contacts" hx-swap="outerHTML">
+    name: <input type="text" name="name" {{ if .Values.name }} value="{{ .Values.name }}" {{ end }}>
+    email: <input type="email" name="email" {{ if .Values.email }} value="{{ .Values.email }}" {{ end }}>
         
-        {{ if .Errors.email }}
-            <div style="color: red;">
-                {{ .Errors.email }}
-            </div>
-        {{ end }}
+    {{ if .Errors.email }}
+        <div style="color: red;">
+            {{ .Errors.email }}
+        </div>
+    {{ end }}
 
-        <button type="submit">Create Contact</button>
-    </form>
+    <button type="submit">Create Contact</button>
+</form>
 {{ end }}
 
 {{ block "display" . }}
-    <div id="contacts" style="display: flex; flex-direction: column;">
-        {{ range .Contacts }}
-            <div>
-                Name: <span>{{ .Name }}</span>
-                <br>
-                Email: <span>{{ .Email }}</span>
-            </div>
-            <br>
-        {{ end }}
+<div id="contacts" style="display: flex; flex-direction: column;">
+    {{ range .Contacts }}
+        {{ template "contact" . }}
+    {{ end }}
+</div>
+{{ end }}
+
+{{ block "contact" . }}
+<div id="contact-{{ .Id }}" class="contact">
+    <div class="htmx-indicator" id="ci-{{ .Id }}">
+        <img src="images/bars.svg" alt="loading" style="width: 1rem;">
     </div>
+    <br>
+    Name: <span>{{ .Name }}</span>
+    <br>
+    Email: <span>{{ .Email }}</span>
+    <br>
+    <span hx-delete="/contacts/{{ .Id }}" hx-swap="outerHTML swap:500ms" hx-target="#contact-{{ .Id }}" hx-indicator="#ci-{{ .Id }}" style="color: blue; cursor: pointer;">delete</span>
+</div>
+<br>
+{{ end }}
+
+{{ block "oob-contact" . }}
+<div id="contacts" hx-swap-oob="beforebegin">
+    {{ template "contact" . }}
+</div>
+<br>
 {{ end }}
